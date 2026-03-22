@@ -34,17 +34,6 @@ services:
     networks:
       - joke_network
 
-  #submission app container
-  submit-app:
-    build: ./submit-app
-    container_name: submit_app_container
-    ports:
-      - "3001:3001"
-    depends_on:
-      - db
-    networks:
-      - joke_network
-
 #private network
 networks:
   joke_network:
