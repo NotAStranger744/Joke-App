@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joke Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .joke-container { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9; }
+        .punchline { font-weight: bold; color: #2c3e50; margin-top: 15px; display: block; }
+        .hidden { display: none; }
+        select, button { padding: 10px; font-size: 16px; margin-top: 10px; }
+        button { cursor: pointer; background-color: #3498db; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #2980b9; }
+    </style>
+</head>
+<body>
+
+    <h1>Tell me a Joke!</h1>
+    
+    <label for="jokeType">Select a Joke Type:</label>
+    <br>
+    <select id="jokeType">
+        <option value="any">any</option>
+    </select>
+    
+    <button id="getJokeBtn">Get Joke</button>
+    
+    <div id="jokeDisplay" class="joke-container hidden">
+        <div id="setup"></div>
+        <div id="punchline" class="punchline hidden"></div>
+    </div>
+
+    <script>
+        const typeDropdown = document.getElementById('jokeType');
+        const getJokeBtn = document.getElementById('getJokeBtn');
+        const jokeDisplay = document.getElementById('jokeDisplay');
+        const setupDiv = document.getElementById('setup');
+        const punchlineDiv = document.getElementById('punchline');
+
+        // Function to fetch types from the API (Requirement 3 & 6b)
+        async function loadJokeTypes() {
+            try {
+                // We will build this backend endpoint next!
+                const response = await fetch('/types'); 
+                if (!response.ok) return; // Exit if backend isn't ready yet
+                
+                const types = await response.json();
+                
+                // Keep the currently selected value if possible
+                const currentValue = typeDropdown.value;
+                
+                typeDropdown.innerHTML = '<option value="any">any</option>'; // Reset and add 'any'
+                
+                types.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.name;
+                    option.textContent = type.name;
+                    typeDropdown.appendChild(option);
+                });
+
+                if (currentValue) typeDropdown.value = currentValue;
+
+            } catch (error) {
+                console.log("Waiting for backend API to be built...");
+            }
+        }
+
+        // The brief requires the list to update "each time the dropdown list is interacted with"
+        typeDropdown.addEventListener('focus', loadJokeTypes);
+        
+        // Also load once on initial page load
+        loadJokeTypes();
+
+        // Function to fetch and display a joke (Requirement 1, 2 & 6a)
+        getJokeBtn.addEventListener('click', async () => {
+            const selectedType = typeDropdown.value;
+            
+            // Reset UI for new joke
+            jokeDisplay.classList.remove('hidden');
+            setupDiv.textContent = "Fetching a joke...";
+            punchlineDiv.textContent = "";
+            punchlineDiv.classList.add('hidden');
+
+            try {
+                // We will build the /joke/:type endpoint next!
+                const response = await fetch(`/joke/${selectedType}`);
+                const data = await response.json();
+                
+                // If API returns an array of jokes, take the first one
+                const joke = Array.isArray(data) ? data[0] : data;
+
+                if (joke && joke.setup) {
+                    setupDiv.textContent = joke.setup;
+                    
+                    // The 3-second delay requirement for the punchline
+                    setTimeout(() => {
+                        punchlineDiv.textContent = joke.punchline;
+                        punchlineDiv.classList.remove('hidden');
+                    }, 3000);
+                } else {
+                    setupDiv.textContent = "No jokes found for this type!";
+                }
+
+            } catch (error) {
+                setupDiv.textContent = "Error connecting to the server. We need to build the API!";
+            }
+        });
+    </script>
+</body>
+</html>
