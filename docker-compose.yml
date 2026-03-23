@@ -43,7 +43,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - RABBITMQ_URL=amqp://20.250.146.103:5672 #change if VM 2 IP changes
+      - RABBITMQ_URL=amqp://10.0.0.6:5672 #change if VM 2 IP changes
     networks:
       - joke_network
 
