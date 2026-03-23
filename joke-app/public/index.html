@@ -16,7 +16,7 @@
 </head>
 <body>
 
-    <h1>Tell me a Joke!</h1>
+    <h1>Tell a Joke</h1>
     
     <label for="jokeType">Select a Joke Type:</label>
     <br>
@@ -38,19 +38,17 @@
         const setupDiv = document.getElementById('setup');
         const punchlineDiv = document.getElementById('punchline');
 
-        // Function to fetch types from the API (Requirement 3 & 6b)
+        //fetch types from mysql
         async function loadJokeTypes() {
             try {
-                // We will build this backend endpoint next!
                 const response = await fetch('/types'); 
-                if (!response.ok) return; // Exit if backend isn't ready yet
+                if (!response.ok) return; //if mysql isnt responding
                 
                 const types = await response.json();
                 
-                // Keep the currently selected value if possible
                 const currentValue = typeDropdown.value;
                 
-                typeDropdown.innerHTML = '<option value="any">any</option>'; // Reset and add 'any'
+                typeDropdown.innerHTML = '<option value="any">any</option>'; //add any
                 
                 types.forEach(type => {
                     const option = document.createElement('option');
@@ -66,34 +64,32 @@
             }
         }
 
-        // The brief requires the list to update "each time the dropdown list is interacted with"
+        //update each time the dropdown list is interacted with
         typeDropdown.addEventListener('focus', loadJokeTypes);
         
-        // Also load once on initial page load
+        //initial load of joke types
         loadJokeTypes();
 
-        // Function to fetch and display a joke (Requirement 1, 2 & 6a)
+        //display joke
         getJokeBtn.addEventListener('click', async () => {
             const selectedType = typeDropdown.value;
             
-            // Reset UI for new joke
             jokeDisplay.classList.remove('hidden');
             setupDiv.textContent = "Fetching a joke...";
             punchlineDiv.textContent = "";
             punchlineDiv.classList.add('hidden');
 
             try {
-                // We will build the /joke/:type endpoint next!
                 const response = await fetch(`/joke/${selectedType}`);
                 const data = await response.json();
                 
-                // If API returns an array of jokes, take the first one
+                //if mysql returns an array, take the first joke, otherwise use the single joke object
                 const joke = Array.isArray(data) ? data[0] : data;
 
                 if (joke && joke.setup) {
                     setupDiv.textContent = joke.setup;
                     
-                    // The 3-second delay requirement for the punchline
+                    //3 sec delay
                     setTimeout(() => {
                         punchlineDiv.textContent = joke.punchline;
                         punchlineDiv.classList.remove('hidden');

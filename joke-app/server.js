@@ -73,5 +73,5 @@ app.get('/joke/:type', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Joke App connected and listening at http://localhost:${port}`);
+    console.log(`Joke App connected and listening at Port ${port}`);
 });
