@@ -60,7 +60,7 @@
                 if (currentValue) typeDropdown.value = currentValue;
 
             } catch (error) {
-                console.log("Waiting for backend API to be built...");
+                console.log("Error fetching joke types:", error);
             }
         }
 
@@ -99,7 +99,7 @@
                 }
 
             } catch (error) {
-                setupDiv.textContent = "Error connecting to the server. We need to build the API!";
+                setupDiv.textContent = "Error connecting to the server";
             }
         });
     </script>
