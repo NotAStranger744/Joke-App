@@ -70,8 +70,7 @@ const swaggerDocument = {
     }
 };
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
+app.use('/joke/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //connect to sql database
 const pool = mysql.createPool({
