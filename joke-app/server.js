@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
+const path = require('path');
 
 const app = express();
 const port = 3000;
@@ -8,6 +9,12 @@ const port = 3000;
 app.use(cors());
 app.use(express.static('public')); 
 app.use(express.json());
+
+//routing for kong to serve the webpage
+app.use('/joke', express.static('public'));
+app.get('/joke', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 //connect to sql database
 const pool = mysql.createPool({
