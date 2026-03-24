@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
 const path = require('path');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 const port = 3000;
@@ -15,6 +17,61 @@ app.use('/joke', express.static('public'));
 app.get('/joke', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+const swaggerDocument = {
+    openapi: '3.0.0',
+    info: {
+        title: 'Joke Application API',
+        version: '1.0.0',
+        description: 'API for retrieving jokes and joke categories.'
+    },
+    paths: {
+        '/types': {
+            get: {
+                summary: 'Retrieves a list of all available joke types/categories',
+                responses: { 
+                    '200': { description: 'Successful operation' },
+                    '500': { description: 'Database connection failed' }
+                }
+            }
+        },
+        '/joke/{type}': {
+            get: {
+                summary: 'Retrieves random jokes based on the provided type',
+                parameters: [
+                    {
+                        name: 'type',
+                        in: 'path',
+                        required: true,
+                        description: 'The category of the joke (use "any" for a random category)',
+                        schema: { type: 'string' }
+                    },
+                    {
+                        name: 'count',
+                        in: 'query',
+                        required: false,
+                        description: 'The number of jokes to return (defaults to 1)',
+                        schema: { type: 'integer', minimum: 1 }
+                    }
+                ],
+                responses: { 
+                    '200': { description: 'Successfully retrieved joke(s)' },
+                    '404': { description: 'No jokes found for this type' },
+                    '500': { description: 'Database connection failed' }
+                }
+            }
+        },
+        '/docs': {
+            get: {
+                summary: 'API documentation (This Page)',
+                responses: { '200': { description: 'API documentation successfully loaded' } }
+            }
+        }
+    }
+};
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 //connect to sql database
 const pool = mysql.createPool({
