@@ -83,15 +83,14 @@
                 const response = await fetch(`/joke/${selectedType}`);
                 
                 if (response.status === 429) {
-                    alert("Rate Limit Exceeded. Please wait a minute before requesting more jokes.");
-                    setupDiv.textContent = "You are being rate limited by the API Gateway.";
+                    setupDiv.textContent = "You are being rate limited.";
                     return;
                 }
                 if (!response.ok) {
                     setupDiv.textContent = "Server error occurred.";
                     return;
                 }
-                
+
                 const data = await response.json();
                 
                 //if mysql returns an array, take the first joke, otherwise use the single joke object
